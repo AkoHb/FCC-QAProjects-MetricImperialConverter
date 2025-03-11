@@ -1,2 +1,5 @@
 .env
 node_modules
+app.txt
+main.txt
+convertHandlerFlag.js
