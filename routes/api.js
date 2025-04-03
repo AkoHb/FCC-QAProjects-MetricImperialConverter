@@ -4,44 +4,32 @@ const expect = require("chai").expect;
 const ConvertHandler = require("../controllers/convertHandler.js");
 
 const processingData = (req, res, convertHandler) => {
-    let input = (req?.query?.input && req.query.input.trim()) || "1L";
+    let input = req.query?.input?.trim() || "1L";
 
-    let initNum = convertHandler.getNum(input);
-    let initUnit = convertHandler.getUnit(input);
+    let initNum = convertHandler?.getNum(input);
+    let initUnit = convertHandler?.getUnit(input);
 
-    if (!initNum && !initUnit) {
+    if ((!initNum || Number.isNaN(initNum)) && !initUnit) {
         res.send("invalid number and unit");
         return;
-        // return res.status(400).json({ error: "Invalid number and unit" });
     }
-    if (!initNum) {
+    if (!initNum || Number.isNaN(initNum)) {
         res.send("invalid number");
         return;
-        // return res.status(400).json({ error: "Invalid number" });
     }
     if (!initUnit) {
         res.send("invalid unit");
         return;
-        // return res.status(400).json({ error: "Invalid unit" });
     }
 
-    const initUnitString = convertHandler.spellOutUnit(initUnit);
     const returnUnit = convertHandler.getReturnUnit(initUnit);
-    const returnUnitString = convertHandler.spellOutUnit(returnUnit);
-    const convert = convertHandler.convert(initNum, initUnit, returnUnit);
+    const convert = convertHandler.convert(initNum, initUnit);
 
-    const hasError = [
-        initUnitString,
-        returnUnit,
-        returnUnitString,
-        convert,
-    ].some(
-        (res) =>
-            typeof res === "string" &&
-            (res.startsWith("[ERROR]") || res.startsWith("[INFO]"))
+    const flag = [initNum, initUnit, convert, returnUnit].some((res) =>
+        [undefined, null, ""].includes(res)
     );
 
-    if (hasError) {
+    if (flag) {
         return res
             .status(400)
             .json({ error: "Invalid data in conversion process." });
@@ -49,25 +37,24 @@ const processingData = (req, res, convertHandler) => {
 
     const resultString = convertHandler.getString(
         initNum,
-        initUnitString,
+        initUnit,
         convert,
-        returnUnitString
+        returnUnit
     );
 
-    if (
-        typeof resultString === "string" &&
-        resultString.startsWith("[ERROR]")
-    ) {
+    if ([undefined, null, ""].includes(resultString)) {
         return res.status(400).json({ error: resultString });
     }
 
-    res.json({
-        initNum,
+    const result = {
+        initNum: +initNum,
         initUnit,
-        returnNum: convert,
+        returnNum: +convert,
         returnUnit,
         string: resultString,
-    });
+    };
+
+    res.status(200).send(result);
 };
 
 module.exports = function (app) {

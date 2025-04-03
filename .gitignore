@@ -1,5 +1,8 @@
 .env
+.replit
+sample.env
 node_modules
 app.txt
 main.txt
 convertHandlerFlag.js
+convertHandlerCopy.js

@@ -85,7 +85,7 @@ const testsData = {
         function: (initUnit) => convertHandler.getReturnUnit(initUnit),
         testData: [
             {
-                testName: "For Each Valid Returned Unit Inputs",
+                testName: "For Each Valid Unit Inputs",
                 input: ["gal", "l", "mi", "km", "lbs", "kg"],
                 expectedOutput: ["L", "gal", "km", "mi", "kg", "lbs"],
             },
@@ -153,10 +153,10 @@ const testsData = {
 
 suite("Unit Tests", function () {
     for (const [testTitle, testConfig] of Object.entries(testsData)) {
-        suite(testTitle, function () {
-            testConfig.testData.forEach((obj) => {
+      suite(testTitle, function () {
+            testConfig.testData.forEach((obj, idx) => {
                 const { testName, input, expectedOutput, tolerance } = obj;
-                test(testName, function () {
+                test(testName, function (done) {
                     if (Array.isArray(input)) {
                         // Handle multiple inputs (e.g., for convert function)
                         if (tolerance !== undefined) {
@@ -170,7 +170,7 @@ suite("Unit Tests", function () {
                             // Use assert.equal for exact comparisons
                             assert.equal(
                                 testConfig.function(...input),
-                                expectedOutput
+                                expectedOutput[idx]
                             );
                         }
                     } else if (Array.isArray(expectedOutput)) {
@@ -188,11 +188,20 @@ suite("Unit Tests", function () {
                             expectedOutput
                         );
                     }
+                    done();
                 });
             });
         });
     }
 });
+
+/*
+ *
+ *
+ *       FILL IN EACH UNIT TEST BELOW COMPLETELY
+ *       -----[Keep the tests in the same order!]----
+ *       (if additional are added, keep them at the very end!)
+ */
 
 // const chai = require("chai");
 // let assert = chai.assert;
@@ -283,7 +292,7 @@ suite("Unit Tests", function () {
 //   });
 
 //   suite("Function convertHandler.getReturnUnit(initUnit)", function () {
-//     test("For Each Valid Returned Unit Inputs", function (done) {
+//     test("For Each Valid Unit Inputs", function (done) {
 //       let input = ["gal", "l", "mi", "km", "lbs", "kg"];
 //       let expect = ["L", "gal", "km", "mi", "kg", "lbs"];
 //       input.forEach(function (ele, i) {
